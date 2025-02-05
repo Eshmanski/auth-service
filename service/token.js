@@ -9,9 +9,9 @@ class TokenService {
         return { accessToken, refreshToken };
     }
 
-    async saveToken(personId, refreshToken) {
-        let token = new Token(personId, refreshToken);
-        const dbToken = await db.findTokenById(personId);
+    async saveToken(personId, refreshToken, device) {
+        let token = new Token({ personId, refreshToken }, device);
+        const dbToken = await this.findToken(personId, device);
 
         if (dbToken) await db.updateToken(token);
         else token = await db.createToken(token);
@@ -33,7 +33,6 @@ class TokenService {
         }
     }
 
-    
     validateRefreshToken(token) {
         try {
             const personDTO = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
@@ -42,11 +41,18 @@ class TokenService {
             return null;
         }
     }
+
+    async createTokenAndSave(personId, device) {
+        const tokens = this.generateTokens({ id: personId });
+        await this.saveToken(personId, tokens.refreshToken, device);
+        return tokens;
+    }
     
-    async findToken(refreshToken) {
-        const token = await db.findTokenByRefresh(refreshToken);
+    async findToken(personId, device) {
+        const token = await db.findToken(personId, device);
         return token;
     }
+
 }
 
 module.exports = new TokenService();

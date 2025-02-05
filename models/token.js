@@ -1,12 +1,14 @@
 class Token {
     id;
-    personId;
-    refreshToken;
+    person_id;
+    refresh_token;
+    device;
 
-    constructor(personId, refreshToken, id) {
+    constructor({ id, personId, refreshToken }, device) {
         this.id = id ?? 0;
-        this.personId = personId;
-        this.refreshToken = refreshToken;
+        this.person_id = personId;
+        this.refresh_token = refreshToken;
+        this.device = device;
     }
 
     update(token) {

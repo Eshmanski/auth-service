@@ -7,21 +7,16 @@ const mailService = require('./mail');
 const bcrypt = require('bcrypt');
 
 class PersonService {
-    async registration(nickname, email, password) {
-        const person = await db.findPersonByEmail(email);
+    async registration(personData, device) {
+        const person = await db.findPersonByEmail(personData.email);
         if (person) throw ApiError.PersonExistError();
 
-        const passHash = await bcrypt.hash(password, 3);
-        let newPerson = Person.createNewPerson(nickname, email, passHash);
+        let newPerson = await Person.createNewPerson(personData);
         newPerson = await db.createPerson(newPerson);
 
-        await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${newPerson.activationLink}`);
+        await mailService.sendActivationMail(personData.email, `${process.env.API_URL}/api/activate/${newPerson.activation_link}`);
 
-        const personDTO = new PersonDTO(newPerson);
-        const tokens = tokenService.generateTokens({ ...personDTO });
-        await tokenService.saveToken(personDTO.id, tokens.refreshToken);
-
-        return { ...tokens, person: personDTO };
+        return tokenService.createTokenAndSave(person.id, device);
     }
 
     async activate(activationLink) {
@@ -29,23 +24,20 @@ class PersonService {
 
         if (!person) throw ApiError.PersonLinkNotExistError();
 
-        person.isActivated = true;
+        person.is_activated = true;
+        person.activation_link = '';
+
         await db.updatePerson(person);
     }
 
-    async login(email, password) {
-        const person = await db.findPersonByEmail(email);
+    async login(authData, device) {
+        const person = await db.findPersonByEmail(authData.email);
         if (!person) throw ApiError.PersonNotExistError();
 
-        const isPassEquals = await bcrypt.compare(password, person.password);
+        const isPassEquals = await bcrypt.compare(authData.password, person.password);
         if (!isPassEquals) throw ApiError.WrongPasswordError();
 
-        const personDTO = new PersonDTO(person);
-        const tokens = tokenService.generateTokens({ ...personDTO });
-
-        await tokenService.saveToken(personDTO.id, tokens.refreshToken);
-
-        return { ...tokens, person: personDTO };
+        return tokenService.createTokenAndSave(person.id, device);
     }
 
     async logout(refreshToken) {
@@ -53,21 +45,17 @@ class PersonService {
         return token;
     }
 
-    async refresh(refreshToken) {
+    async refresh(refreshToken, device) {
         if (!refreshToken) throw ApiError.UnauthorizedError();
 
         const { id } = tokenService.validateRefreshToken(refreshToken);
-        const token = await tokenService.findToken(refreshToken);
+        const token = await tokenService.findToken(id, device);
 
         if (!id || !token) throw ApiError.UnauthorizedError();
 
         const person = await db.findPersonById(id);
-        const personDTO = new PersonDTO(person);
-        const tokens = tokenService.generateTokens({ ...personDTO });
 
-        await tokenService.saveToken(personDTO.id, tokens.refreshToken);
-
-        return { ...tokens, person: personDTO };
+        return tokenService.createTokenAndSave(person.id, device);
     }
 
     async getAllPersons() {

@@ -8,8 +8,7 @@ class PersonController {
             const errors = validationResult(req);
             if (!errors.isEmpty()) return next(ApiError.BadRequestError('Ошибка валидации', errors.array())) 
 
-            const { nickname, email, password } = req.body;
-            const personData = await personService.registration(nickname, email, password);
+            const personData = await personService.registration(req.body, req.device);
             res.cookie('refreshToken', personData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
 
             return res.json(personData);
@@ -20,8 +19,7 @@ class PersonController {
 
     async login(req, res, next) {
         try {
-            const { email, password } = req.body;
-            const personData = await personService.login(email, password);
+            const personData = await personService.login(req.body, req.device);
             res.cookie('refreshToken', personData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
 
             return res.json(personData);
@@ -56,7 +54,7 @@ class PersonController {
     async refresh(req, res, next) {
         try {
             const { refreshToken } = req.cookies;
-            const personData = await personService.refresh(refreshToken);
+            const personData = await personService.refresh(refreshToken, req.device);
             res.cookie('refreshToken', personData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
 
             return res.json(personData);

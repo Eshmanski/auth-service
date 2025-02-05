@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const errorMiddlewares = require('./middlewares/error');
+const useragent = require('express-useragent');
 const cookieParser = require('cookie-parser');
 const router = require('./router');
 const express = require('express');
@@ -15,6 +16,7 @@ const CORS_OPTIONS = {
 const app = express();
 
 app.use(cors(CORS_OPTIONS));
+app.use(useragent.express());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api', router);

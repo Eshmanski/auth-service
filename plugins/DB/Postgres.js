@@ -33,13 +33,12 @@ class PGPool {
         return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
-    async findTokenById(personId) {
-        const data = await this.pool.query('SELECT * FROM token WHERE person_id = $1', [personId]);
-        return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
-    }
+    async findToken(personId, device) {
+        const data = await this.pool.query(
+            'SELECT * FROM token WHERE person_id = $1 AND device_type = $2 AND browser_name = $3 AND browser_version = $4 AND os_name = $5 AND os_version = $6 AND ip_address = $7', 
+            [personId, device.device_type, device.browser_name, device.browser_version, device.os_name, device.os_version, device.ip_address]
+        );
 
-    async findTokenByRefresh(refresh) {
-        const data = await this.pool.query('SELECT * FROM token WHERE refresh_token = $1', [refresh]);
         return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
     }
 
@@ -55,22 +54,33 @@ class PGPool {
                 person.nickname,
                 person.email, 
                 person.password,
-                person.isActivated,
-                person.activationLink,
+                person.is_activated,
+                person.activation_link,
             ]);
         
             return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
     async createToken(token) {
-        const data = await this.pool.query(
-            'INSERT INTO token (person_id, refresh_token) VALUES ($1, $2) RETURNING *', 
-            [
-                token.personId,
-                token.refreshToken,
-            ]);
-        
-            return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
+        const query = `
+        INSERT INTO token (person_id, refresh_token, device_type, browser_name, browser_version, os_name, os_version, ip_address, created_at, last_used_at) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        RETURNING *;
+        `;
+
+        const values = [
+            token.person_id,
+            token.refresh_token,        
+            token.device.device_type,
+            token.device.browser_name,
+            token.device.browser_version,
+            token.device.os_name,
+            token.device.os_version,
+            token.device.ip_address,
+        ];
+
+        const data = await this.pool.query(query, values);
+        return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
     }
 
     async updatePerson(person) {
@@ -80,27 +90,45 @@ class PGPool {
                 person.nickname,
                 person.email, 
                 person.password,
-                person.isActivated,
-                person.activationLink,
+                person.is_activated,
+                person.activation_link,
                 person.id,
             ]);
     }
 
     async updateToken(token) {
-        await this.pool.query(
-            'UPDATE token SET refresh_token = $1 WHERE person_id = $2', 
+        await this.pool.query(`
+            UPDATE token SET 
+                refresh_token = $1, 
+                created_at = CURRENT_TIMESTAMP, 
+                last_used_at = CURRENT_TIMESTAMP 
+            WHERE 
+                person_id = $2 AND 
+                device_type = $3 AND 
+                browser_name = $4 AND 
+                browser_version = $5 AND 
+                os_name = $6 AND 
+                os_version = $7 AND 
+                ip_address = $8
+            `, 
             [
-                token.refreshToken,
-                token.personId,
+                token.refresh_token,
+                token.person_id,
+                token.device.device_type,
+                token.device.browser_name,
+                token.device.browser_version,
+                token.device.os_name,
+                token.device.os_version,
+                token.device.ip_address,
             ]);
     }
 
-    async deleteToken(token) {
+    async deleteToken(tokenStr) {
         const data = await this.pool.query(
             'DELETE FROM token WHERE refresh_token = $1 RETURNING *',
-            [token]
+            [tokenStr]
         );
-        console.log(data.rows[0])
+
         return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
     }
 }

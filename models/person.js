@@ -1,30 +1,37 @@
 const uuid = require('uuid');
-
+const bcrypt = require('bcrypt');
 
 class Person {
     id;
     nickname;
     email;
     password;
-    isActivated;
-    activationLink;
+    is_activated;
+    activation_link;
 
-    constructor(nickname, email, password, isActivated, activationLink, id) {
-        this.id = id ?? 0;
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.isActivated = isActivated ?? false;
-        this.activationLink = activationLink ?? '';
+    constructor(obj) {
+        this.id = obj.id ?? 0;
+        this.nickname = obj.nickname ?? 'Unknown';
+        this.email = obj.email ?? 'Unknown';
+        this.password = obj.password ?? 'Unknown';
+        this.is_activated = obj.is_activated ?? false;
+        this.activation_link = obj.activation_link ?? '';
     }
 
-    static createNewPerson(nickname, email, password) {
-        return new Person(nickname, email, password, false, uuid.v4());
+    static async createNewPerson(personData) {
+        const personObj = {
+            nickname: personData.nickname,
+            email: personData.email,
+            password: await bcrypt.hash(personData.password, 3),
+            is_activated: false,
+            activation_link: uuid.v4()
+        }
+
+        return new Person(personObj);
     }
 
     static convertFromDB(dbPerson) {
-        const { id, nickname, email, password, is_activated, activation_link } = dbPerson;
-        return new Person(nickname, email, password, is_activated, activation_link, id);
+        return new Person(dbPerson);
     }
 }
 

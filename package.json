@@ -11,20 +11,20 @@
   "license": "ISC",
   "packageManager": "pnpm@8.14.3+sha512.c3ed80eb583be3e2b7ef31eb96b8b9cfaa0503e5d44ec717514120b5187b2f933736e9038c51a5a23ad582790ba41d4ab784618c89fa7e2365f6665685d612ee",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "device-detector-js": "^3.0.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "express-useragent": "^1.0.15",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.10.0",
-    "pg": "^8.13.1",
-    "uuid": "^11.0.5"
+    "nodemailer": "^7.0.3",
+    "pg": "^8.16.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.10"
   }
 }

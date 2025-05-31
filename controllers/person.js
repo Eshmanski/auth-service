@@ -8,10 +8,10 @@ class PersonController {
             const errors = validationResult(req);
             if (!errors.isEmpty()) return next(ApiError.BadRequestError('Ошибка валидации', errors.array())) 
 
-            const personData = await personService.registration(req.body, req.device);
-            res.cookie('refreshToken', personData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+            const token = await personService.registration(req.body, req.device);
+            res.cookie('refreshToken', token.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
 
-            return res.json(personData);
+            return res.json({ token: token.accessToken });
         } catch (error) {
             next(error);
         }

@@ -17,5 +17,11 @@
 | `API_URL` | The URL of the API |
 | `CLIENT_URL` | The URL of the client |
 
+# End Points
 
+| API | Method | Body | Response | Description |
+|-----|--------|------|----------|-------------|
+| /registration | Post |
+POST    /registration
 
+Body

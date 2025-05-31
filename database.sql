@@ -1,6 +1,5 @@
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
-    nickname VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     activation_link VARCHAR(255),

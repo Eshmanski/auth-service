@@ -1,10 +1,11 @@
+const PersonDTO = require('../dtos/personDTO');
 const db = require('../plugins/DB/Postgres');
 const Token = require('../models/token');
 const jwt = require('jsonwebtoken');
 
 class TokenService {
     generateTokens(payload) {
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '30s' });
+        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '5h' });
         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
         return { accessToken, refreshToken };
     }
@@ -42,9 +43,9 @@ class TokenService {
         }
     }
 
-    async createTokenAndSave(personId, device) {
-        const tokens = this.generateTokens({ id: personId });
-        await this.saveToken(personId, tokens.refreshToken, device);
+    async createTokenAndSave(person, device) {
+        const tokens = this.generateTokens(PersonDTO.toPlainObject(person));
+        await this.saveToken(person.id, tokens.refreshToken, device);
         return tokens;
     }
     

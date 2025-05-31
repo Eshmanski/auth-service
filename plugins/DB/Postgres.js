@@ -49,16 +49,15 @@ class PGPool {
 
     async createPerson(person) {
         const data = await this.pool.query(
-            'INSERT INTO person (nickname, email, password, is_activated, activation_link) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+            'INSERT INTO person (email, password, is_activated, activation_link) VALUES ($1, $2, $3, $4) RETURNING *', 
             [
-                person.nickname,
                 person.email, 
                 person.password,
                 person.is_activated,
                 person.activation_link,
             ]);
         
-            return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
+        return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
     async createToken(token) {

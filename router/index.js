@@ -9,56 +9,47 @@ const router = Router();
 // Authentication routes
 const authValidation = [
     body('email').isEmail(),
-    body('nickname').isLength({ min: 3, max: 32 }),
     body('password').isLength({ min: 6, max: 32 })
 ];
 
-const commonMiddleware = [
-    deviceInfoMiddleware
-];
-
-const authMiddleware = [
-    ...commonMiddleware,
-    emailToLowerCase
-];
 
 // Registration and login
 router.post(
     '/registration',
-    [...authMiddleware, ...authValidation],
+    [deviceInfoMiddleware, emailToLowerCase, ...authValidation],
     personController.registration
 );
 
 router.post(
     '/login',
-    authMiddleware,
+    [deviceInfoMiddleware, emailToLowerCase],
     personController.login
 );
 
 // Session management
 router.post(
     '/logout',
-    commonMiddleware,
+    [deviceInfoMiddleware],
     personController.logout
 );
 
 router.get(
     '/refresh',
-    commonMiddleware, 
+    [deviceInfoMiddleware],
     personController.refresh
 );
 
 // Account activation
 router.get(
     '/activate/:link',
-    commonMiddleware,
+    [deviceInfoMiddleware],
     personController.activate
 );
 
 // Protected routes
 router.get(
     '/persons',
-    [...commonMiddleware, authMiddlewares],
+    [deviceInfoMiddleware, authMiddlewares],
     personController.getPersons
 );
 

@@ -16,7 +16,7 @@ class PersonService {
 
         await mailService.sendActivationMail(personData.email, `${process.env.API_URL}/api/activate/${newPerson.activation_link}`);
 
-        return tokenService.createTokenAndSave(person.id, device);
+        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(newPerson), device);
     }
 
     async activate(activationLink) {
@@ -37,7 +37,7 @@ class PersonService {
         const isPassEquals = await bcrypt.compare(authData.password, person.password);
         if (!isPassEquals) throw ApiError.WrongPasswordError();
 
-        return tokenService.createTokenAndSave(person.id, device);
+        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(person), device);
     }
 
     async logout(refreshToken) {
@@ -55,7 +55,7 @@ class PersonService {
 
         const person = await db.findPersonById(id);
 
-        return tokenService.createTokenAndSave(person.id, device);
+        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(person), device);
     }
 
     async getAllPersons() {

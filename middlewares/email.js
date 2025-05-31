@@ -1,7 +1,5 @@
-const emailToLowerCase = (req, res, next) => {
-    if (req.body.email) {
-        req.body.email = req.body.email.toLowerCase();
-    }
+const emailToLowerCase = (req, _, next) => {
+    if (req.body.email) req.body.email = req.body.email.toLowerCase();
     next();
 };
 

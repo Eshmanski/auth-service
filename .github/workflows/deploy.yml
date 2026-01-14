@@ -8,16 +8,31 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    environment: prod 
 
     steps:
       - name: Check Runner setting
         run: whoami; node -v; pnpm -v;
-        
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Create .env file
+        run: |
+          echo PORT=${{ secrets.PORT }} >> .env
+          echo DB_USER=${{ secrets.DB_USER }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          echo JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }} >> .env
+          echo JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} >> .env
+
+      - name: Update DB schema
+        run: psql -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -f ./db/update_schema.sql
 
       - name: Start service
         run: pnpm run dev

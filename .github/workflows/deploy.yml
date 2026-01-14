@@ -10,6 +10,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Check Runner setting
+        run: whoami; node -v; pnpm -v;
+        
       - name: Checkout repo
         uses: actions/checkout@v4
 

@@ -1,4 +1,9 @@
-CREATE TABLE person (
+BEGIN;
+
+DROP SCHEMA IF EXISTS auth CASCADE;
+CREATE SCHEMA auth;
+
+CREATE TABLE auth.person (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -8,7 +13,7 @@ CREATE TABLE person (
     UNIQUE(email)
 );
 
-CREATE TABLE token (
+CREATE TABLE auth.token (
     id SERIAL PRIMARY KEY,
     person_id INTEGER NOT NULL,
     refresh_token VARCHAR(255) NOT NULL,
@@ -21,6 +26,8 @@ CREATE TABLE token (
     is_revoked BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_used_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (person_id) REFERENCES person (id) ON DELETE CASCADE,
+    FOREIGN KEY (person_id) REFERENCES auth.person (id) ON DELETE CASCADE,
     UNIQUE(refresh_token)
 );
+
+COMMIT;

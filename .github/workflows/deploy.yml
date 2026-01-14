@@ -45,4 +45,4 @@ jobs:
             -f .\db\update_schema.sql
 
       - name: Start service
-        run: node index.js
+        run: nssm restart AuthService

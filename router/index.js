@@ -12,6 +12,7 @@ const authValidation = [
     body('password').isLength({ min: 6, max: 32 })
 ];
 
+router.get('/check', (req, res) => res.send('Auth service is working'));
 
 // Registration and login
 router.post(

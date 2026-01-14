@@ -22,14 +22,18 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo PORT=${{ secrets.PORT }} >> .env
-          echo DB_USER=${{ secrets.DB_USER }} >> .env
-          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
-          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }} >> .env
-          echo JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} >> .env
+          $envContent = @"
+            PORT=${{ secrets.PORT }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          "@
+
+          Set-Content -Path ".env" -Value $envContent -Encoding utf8
 
       - name: Update DB schema
         run:  |
@@ -39,6 +43,6 @@ jobs:
             -U ${{ secrets.DB_USER }} `
             -d ${{ secrets.DB_NAME }} `
             -f .\db\update_schema.sql
-            
+
       - name: Start service
-        run: pnpm run dev
+        run: node index.js

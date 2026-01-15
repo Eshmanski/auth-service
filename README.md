@@ -17,11 +17,61 @@
 | `API_URL` | The URL of the API |
 | `CLIENT_URL` | The URL of the client |
 
+## Example env file
+```
+PORT=
+
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+DB_NAME=
+
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+
+API_URL=
+CLIENT_URL=
+```
 # End Points
 
-| API | Method | Body | Response | Description |
-|-----|--------|------|----------|-------------|
-| /registration | Post |
-POST    /registration
+### GET  .../api/check
 
-Body
+#### Requirements:
+- Auth - FALSE
+
+#### Return: 
+
+Message "Auth service is working"
+
+### POST  .../api/registration
+
+
+#### Requirements:
+- Auth - FALSE
+
+#### Body:
+
+```
+{
+    email: string,
+    password: string,
+}
+```
+
+#### Response:
+
+```
+{
+    token: string   // Access Token
+}
+```
+
+#### Additional:
+- Add cookie HttpOnly Refresh Token
+- Send Email with activation link

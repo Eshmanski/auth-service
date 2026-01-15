@@ -19,23 +19,23 @@ class PGPool {
     }
 
     async findPersonAll() {
-        const data = await this.pool.query('SELECT * FROM person');
+        const data = await this.pool.query('SELECT * FROM auth.person');
         return data.rows.map(row => Person.convertFromDB(row));
     }
 
     async findPersonById(id) {
-        const data = await this.pool.query('SELECT * FROM person WHERE id = $1', [id]);
+        const data = await this.pool.query('SELECT * FROM auth.person WHERE id = $1', [id]);
         return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
     async findPersonByEmail(email) {
-        const data = await this.pool.query('SELECT * FROM person WHERE email = $1', [email]);
+        const data = await this.pool.query('SELECT * FROM auth.person WHERE email = $1', [email]);
         return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
     async findToken(personId, device) {
         const data = await this.pool.query(
-            'SELECT * FROM token WHERE person_id = $1 AND device_type = $2 AND browser_name = $3 AND browser_version = $4 AND os_name = $5 AND os_version = $6 AND ip_address = $7', 
+            'SELECT * FROM auth.token WHERE person_id = $1 AND device_type = $2 AND browser_name = $3 AND browser_version = $4 AND os_name = $5 AND os_version = $6 AND ip_address = $7', 
             [personId, device.device_type, device.browser_name, device.browser_version, device.os_name, device.os_version, device.ip_address]
         );
 
@@ -43,13 +43,13 @@ class PGPool {
     }
 
     async findPersonByLink(link) {
-        const data = await this.pool.query('SELECT * FROM person WHERE activation_link = $1', [link]);
+        const data = await this.pool.query('SELECT * FROM auth.person WHERE activation_link = $1', [link]);
         return Person.convertFromDB(data.rows[0]);
     }
 
     async createPerson(person) {
         const data = await this.pool.query(
-            'INSERT INTO person (email, password, is_activated, activation_link) VALUES ($1, $2, $3, $4) RETURNING *', 
+            'INSERT INTO auth.person (email, password, is_activated, activation_link) VALUES ($1, $2, $3, $4) RETURNING *', 
             [
                 person.email, 
                 person.password,
@@ -62,7 +62,7 @@ class PGPool {
 
     async createToken(token) {
         const query = `
-        INSERT INTO token (person_id, refresh_token, device_type, browser_name, browser_version, os_name, os_version, ip_address, created_at, last_used_at) 
+        INSERT INTO auth.token (person_id, refresh_token, device_type, browser_name, browser_version, os_name, os_version, ip_address, created_at, last_used_at) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING *;
         `;
@@ -84,7 +84,7 @@ class PGPool {
 
     async updatePerson(person) {
         await this.pool.query(
-            'UPDATE person SET nickname = $1, email = $2, password = $3, is_activated = $4, activation_link = $5 WHERE id = $6', 
+            'UPDATE auth.person SET nickname = $1, email = $2, password = $3, is_activated = $4, activation_link = $5 WHERE id = $6', 
             [
                 person.nickname,
                 person.email, 
@@ -97,7 +97,7 @@ class PGPool {
 
     async updateToken(token) {
         await this.pool.query(`
-            UPDATE token SET 
+            UPDATE auth.token SET 
                 refresh_token = $1, 
                 created_at = CURRENT_TIMESTAMP, 
                 last_used_at = CURRENT_TIMESTAMP 
@@ -124,7 +124,7 @@ class PGPool {
 
     async deleteToken(tokenStr) {
         const data = await this.pool.query(
-            'DELETE FROM token WHERE refresh_token = $1 RETURNING *',
+            'DELETE FROM auth.token WHERE refresh_token = $1 RETURNING *',
             [tokenStr]
         );
 

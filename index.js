@@ -9,8 +9,8 @@ const express = require('express');
 const cors = require('cors');
 const PORT = process.env.PORT ?? 5000;
 const CORS_OPTIONS = {
-    credentials: true,
-    origin: process.env.CLIENT_URL,
+	credentials: true,
+	origin: process.env.CLIENT_URL,
 }
 
 const app = express();
@@ -23,13 +23,13 @@ app.use('/api', router);
 app.use(errorMiddlewares);
 
 const start = async () => {
-    try {
-        await redisClient.connect();
+	try {
+		await redisClient.connect();
 
-        app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
-    } catch (error) {
-        console.log(error);
-    }
+		app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 start();

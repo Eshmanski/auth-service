@@ -1,6 +1,4 @@
-const Token = require('../../models/token');
 const Person = require('../../models/person');
-
 const pg = require('pg');
 
 class PGPool {
@@ -33,15 +31,6 @@ class PGPool {
         return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
-    async findToken(personId, device) {
-        const data = await this.pool.query(
-            'SELECT * FROM auth.token WHERE person_id = $1 AND device_type = $2 AND browser_name = $3 AND browser_version = $4 AND os_name = $5 AND os_version = $6 AND ip_address = $7', 
-            [personId, device.device_type, device.browser_name, device.browser_version, device.os_name, device.os_version, device.ip_address]
-        );
-
-        return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
-    }
-
     async findPersonByLink(link) {
         const data = await this.pool.query('SELECT * FROM auth.person WHERE activation_link = $1', [link]);
         return Person.convertFromDB(data.rows[0]);
@@ -61,28 +50,6 @@ class PGPool {
         return data.rows[0] ? Person.convertFromDB(data.rows[0]) : null;
     }
 
-    async createToken(token) {
-        const query = `
-        INSERT INTO auth.token (person_id, refresh_token, device_type, browser_name, browser_version, os_name, os_version, ip_address, created_at, last_used_at) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        RETURNING *;
-        `;
-
-        const values = [
-            token.person_id,
-            token.refresh_token,        
-            token.device.device_type,
-            token.device.browser_name,
-            token.device.browser_version,
-            token.device.os_name,
-            token.device.os_version,
-            token.device.ip_address,
-        ];
-
-        const data = await this.pool.query(query, values);
-        return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
-    }
-
     async updatePerson(person) {
         await this.pool.query(
             'UPDATE auth.person SET nickname = $1, email = $2, password = $3, is_activated = $4, activation_link = $5 WHERE id = $6', 
@@ -94,42 +61,6 @@ class PGPool {
                 person.activation_link,
                 person.id,
             ]);
-    }
-
-    async updateToken(token) {
-        await this.pool.query(`
-            UPDATE auth.token SET 
-                refresh_token = $1, 
-                created_at = CURRENT_TIMESTAMP, 
-                last_used_at = CURRENT_TIMESTAMP 
-            WHERE 
-                person_id = $2 AND 
-                device_type = $3 AND 
-                browser_name = $4 AND 
-                browser_version = $5 AND 
-                os_name = $6 AND 
-                os_version = $7 AND 
-                ip_address = $8
-            `, 
-            [
-                token.refresh_token,
-                token.person_id,
-                token.device.device_type,
-                token.device.browser_name,
-                token.device.browser_version,
-                token.device.os_name,
-                token.device.os_version,
-                token.device.ip_address,
-            ]);
-    }
-
-    async deleteToken(tokenStr) {
-        const data = await this.pool.query(
-            'DELETE FROM auth.token WHERE refresh_token = $1 RETURNING *',
-            [tokenStr]
-        );
-
-        return data.rows[0] ? Token.convertFromDB(data.rows[0]) : null;
     }
 }
 

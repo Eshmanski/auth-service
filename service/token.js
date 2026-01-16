@@ -1,64 +1,42 @@
 const PersonDTO = require('../dtos/personDTO');
-const db = require('../plugins/DB/Postgres');
-const Token = require('../models/token');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 
-
 class TokenService {
-    generateTokensPack(payload) {
-        const jti = uuid.v4();
+	generateTokensPack(person) {
+		const jti = uuid.v4();
 
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ ...payload, jti }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
+		const payloadAT = PersonDTO.toPayloadAT(person);
+		const payloadRT = PersonDTO.toPayloadRT(jti, person);
 
-        return { jti, accessToken, refreshToken };
-    }
+		const accessToken = jwt.sign(payloadAT, process.env.JWT_ACCESS_SECRET, { expiresIn: '1h' });
+		const refreshToken = jwt.sign(payloadRT, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
 
-    async saveToken(personId, refreshToken, device) {
-        let token = new Token({ personId, refreshToken }, device);
-        const dbToken = await this.findToken(personId, device);
+		return { jti, accessToken, refreshToken };
+	}
 
-        if (dbToken) await db.updateToken(token);
-        else token = await db.createToken(token);
+	validateAccessToken(token) {
+		try {
+			const personDTO = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+			return personDTO;
+		} catch (error) {
+			return null;
+		}
+	}
 
-        return token;
-    }
+	validateRefreshToken(token) {
+		try {
+			const personDTO = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+			return personDTO;
+		} catch (error) {
+			return null;
+		}
+	}
 
-    async removeToken(refreshToken) {
-        const token = await db.deleteToken(refreshToken);
-        return token;
-    }
-
-    validateAccessToken(token) {
-        try {
-            const personDTO = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-            return personDTO;
-        } catch (error) {
-            return null;
-        }
-    }
-
-    validateRefreshToken(token) {
-        try {
-            const personDTO = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-            return personDTO;
-        } catch (error) {
-            return null;
-        }
-    }
-
-    async createTokenAndSave(person, device) {
-        const tokens = this.generateTokens(PersonDTO.toPlainObject(person));
-        await this.saveToken(person.id, tokens.refreshToken, device);
-        return tokens;
-    }
-    
-    async findToken(personId, device) {
-        const token = await db.findToken(personId, device);
-        return token;
-    }
-
+	parse(token) {
+		const payload = jwt.decode(token);
+		return payload;
+	}
 }
 
 module.exports = new TokenService();

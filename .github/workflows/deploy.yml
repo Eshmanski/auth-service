@@ -45,7 +45,7 @@ jobs:
             -p ${{ secrets.DB_PORT }} `
             -U ${{ secrets.DB_USER }} `
             -d ${{ secrets.DB_NAME }} `
-            -f .\db\update_schema.sql
+            -f .\.db\update_schema.sql
 
       - name: Start service
         run: nssm start AuthService

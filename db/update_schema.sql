@@ -7,6 +7,7 @@ CREATE TABLE auth.person (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    superuser BOOLEAN NOT NULL DEFAULT FALSE,
     activation_link VARCHAR(255),
     is_activated BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

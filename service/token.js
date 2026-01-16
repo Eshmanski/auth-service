@@ -2,12 +2,17 @@ const PersonDTO = require('../dtos/personDTO');
 const db = require('../plugins/DB/Postgres');
 const Token = require('../models/token');
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
+
 
 class TokenService {
-    generateTokens(payload) {
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '5h' });
-        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
-        return { accessToken, refreshToken };
+    generateTokensPack(payload) {
+        const jti = uuid.v4();
+
+        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '1h' });
+        const refreshToken = jwt.sign({ ...payload, jti }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
+
+        return { jti, accessToken, refreshToken };
     }
 
     async saveToken(personId, refreshToken, device) {

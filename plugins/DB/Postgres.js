@@ -8,11 +8,11 @@ class PGPool {
 
     constructor() {
         const config = {
-            user: process.env.DB_USER,
-            host: process.env.DB_HOST,
-            database: process.env.DB_NAME,
-            password: process.env.DB_PASSWORD,
-            port: process.env.DB_PORT
+            user: process.env.DB_PGS_USER,
+            host: process.env.DB_PGS_HOST,
+            database: process.env.DB_PGS_NAME,
+            password: process.env.DB_PGS_PASSWORD,
+            port: process.env.DB_PGS_PORT
         }
 
         this.pool = new pg.Pool(config);
@@ -49,10 +49,11 @@ class PGPool {
 
     async createPerson(person) {
         const data = await this.pool.query(
-            'INSERT INTO auth.person (email, password, is_activated, activation_link) VALUES ($1, $2, $3, $4) RETURNING *', 
+            'INSERT INTO auth.person (email, password, superuser, is_activated, activation_link) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
             [
                 person.email, 
                 person.password,
+                person.superuser,
                 person.is_activated,
                 person.activation_link,
             ]);

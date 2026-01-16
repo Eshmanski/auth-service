@@ -3,20 +3,18 @@ const PersonDTO = require('../dtos/personDTO');
 const db = require('../plugins/DB/Postgres');
 const Person = require('../models/person');
 const tokenService = require('./token');
-const mailService = require('./mail');
 const bcrypt = require('bcrypt');
 
 class PersonService {
-    async registration(personData, device) {
+    async registration(personData) {
         const person = await db.findPersonByEmail(personData.email);
         if (person) throw ApiError.PersonExistError();
 
         let newPerson = await Person.createNewPerson(personData);
         newPerson = await db.createPerson(newPerson);
 
-        await mailService.sendActivationMail(personData.email, `${process.env.API_URL}/api/activate/${newPerson.activation_link}`);
-
-        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(newPerson), device);
+        return newPerson;
+        // return tokenService.createTokenAndSave(PersonDTO.toPlainObject(newPerson), device);
     }
 
     async activate(activationLink) {

@@ -6,6 +6,7 @@ class Person {
     nickname;
     email;
     password;
+    superuser;
     is_activated;
     activation_link;
 
@@ -22,6 +23,7 @@ class Person {
         const personObj = {
             nickname: personData.nickname,
             email: personData.email,
+            superuser: false,
             password: await bcrypt.hash(personData.password, 3),
             is_activated: false,
             activation_link: uuid.v4()

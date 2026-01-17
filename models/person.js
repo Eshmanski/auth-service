@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 
 class Person {
 	id;
-	nickname;
 	email;
 	password;
 	superuser;
@@ -12,7 +11,6 @@ class Person {
 
 	constructor(obj) {
 		this.id = obj.id ?? 0;
-		this.nickname = obj.nickname ?? 'Unknown';
 		this.email = obj.email ?? 'Unknown';
 		this.password = obj.password ?? 'Unknown';
 		this.superuser = obj.superuser ?? false;
@@ -22,7 +20,6 @@ class Person {
 
 	static async createNewPerson(personData) {
 		const personObj = {
-			nickname: personData.nickname,
 			email: personData.email,
 			superuser: false,
 			password: await bcrypt.hash(personData.password, 3),

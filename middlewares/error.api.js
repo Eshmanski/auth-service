@@ -1,7 +1,7 @@
 const ApiError = require('../errors/api');
 
 
-function errorMiddlewares(err, req, res, next) {
+function errorAPIMiddlewares(err, req, res, next) {
 	console.log(err);
 
 	if (err instanceof ApiError) {
@@ -12,4 +12,4 @@ function errorMiddlewares(err, req, res, next) {
 	}
 }
 
-module.exports = errorMiddlewares;
+module.exports = errorAPIMiddlewares;

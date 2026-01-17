@@ -9,10 +9,10 @@ function authMiddlewares(req, res, next) {
     const token = authorizationHeader.split(" ")[1];
     if (!token) return next(ApiError.UnauthorizedError());
 
-    const personDTO = tokenService.validateAccessToken(token);
-    if (!personDTO) return next(ApiError.UnauthorizedError());
+    const person = tokenService.validateAccessToken(token);
+    if (!person || !person.isActivated) return next(ApiError.UnauthorizedError());
 
-    req.person = personDTO;
+    req.person = person;
     next();
   } catch (e) {
     return next(ApiError.UnauthorizedError());

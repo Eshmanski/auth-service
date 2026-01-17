@@ -26,7 +26,6 @@ class PersonService {
 
 	async activate(activationLink) {
 		const person = await db.findPersonByLink(activationLink);
-
 		if (!person) throw ApiError.PersonLinkNotExistError();
 
 		person.is_activated = true;

@@ -43,14 +43,19 @@ router.get(
 // Account activation
 router.get(
 	'/activate/:link',
-	[deviceInfoMiddleware],
 	personController.activate
 );
 
 // Protected routes
 router.get(
+	'/me',
+	[authMiddlewares],
+	personController.getMe
+);
+
+router.get(
 	'/persons',
-	[deviceInfoMiddleware, authMiddlewares],
+	[authMiddlewares],
 	personController.getPersons
 );
 

@@ -104,8 +104,19 @@ class PersonController {
       const activationLink = req.params.link;
       await personService.activate(activationLink);
 
-      return res.redirect(process.env.CLIENT_URL)
+      return res.sendStatus(204);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async getMe(req, res, next) {
+    try {
+      const { id } = req.person;
+      const person = await personService.getPerson(id);
+
+      return res.json(person);
+    } catch {
       next(error);
     }
   }

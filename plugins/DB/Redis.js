@@ -6,7 +6,9 @@ class RedisClient {
   url;
 
   constructor() {
-    this.url = `redis://${process.env.DB_REDIS_HOST}:${process.env.DB_REDIS_PORT}`;
+    const { DB_REDIS_USER, DB_REDIS_PASSWORD, DB_REDIS_HOST, DB_REDIS_PORT } = process.env;
+
+    this.url = `redis://${DB_REDIS_HOST}:${DB_REDIS_PORT}`;
     this.redis = createClient({ url: this.url });
   }
 

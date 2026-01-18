@@ -19,6 +19,8 @@ const CORS_OPTIONS = {
 
 const app = express();
 
+app.locals.basePath = process.env.BASE_PATH || '/';
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 

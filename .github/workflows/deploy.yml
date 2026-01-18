@@ -54,3 +54,5 @@ jobs:
             -d "${{ secrets.DB_PGS_NAME }}" \
             -f "./.db/update_schema.sql"
 
+      - name: Start service
+        run:  sudo systemctl restart auth-service | sudo systemctl start auth-service

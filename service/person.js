@@ -1,67 +1,48 @@
-const ApiError = require('../Errors/api');
-const PersonDTO = require('../dtos/personDTO');
 const db = require('../plugins/DB/Postgres');
 const Person = require('../models/person');
-const tokenService = require('./token');
-const mailService = require('./mail');
+const ApiError = require('../errors/api');
 const bcrypt = require('bcrypt');
 
 class PersonService {
-    async registration(personData, device) {
-        const person = await db.findPersonByEmail(personData.email);
-        if (person) throw ApiError.PersonExistError();
+	async registration(personData) {
+		let person = await db.findPersonByEmail(personData.email);
+		if (person) throw ApiError.PersonExistError();
 
-        let newPerson = await Person.createNewPerson(personData);
-        newPerson = await db.createPerson(newPerson);
+		person = await Person.createNewPerson(personData);
+		person = await db.createPerson(person);
 
-        await mailService.sendActivationMail(personData.email, `${process.env.API_URL}/api/activate/${newPerson.activation_link}`);
+		return person;
+	}
 
-        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(newPerson), device);
-    }
+	async login(authData) {
+		const person = await db.findPersonByEmail(authData.email);
+		if (!person) throw ApiError.PersonNotExistError();
 
-    async activate(activationLink) {
-        const person = await db.findPersonByLink(activationLink);
+		const isPassEquals = await bcrypt.compare(authData.password, person.password);
+		if (!isPassEquals) throw ApiError.WrongPasswordError();
 
-        if (!person) throw ApiError.PersonLinkNotExistError();
+		return person;
+	}
 
-        person.is_activated = true;
-        person.activation_link = '';
+	async activate(activationLink) {
+		const person = await db.findPersonByLink(activationLink);
+		if (!person) throw ApiError.PersonLinkNotExistError();
 
-        await db.updatePerson(person);
-    }
+		person.is_activated = true;
+		person.activation_link = '';
 
-    async login(authData, device) {
-        const person = await db.findPersonByEmail(authData.email);
-        if (!person) throw ApiError.PersonNotExistError();
+		await db.updatePerson(person);
+	}
 
-        const isPassEquals = await bcrypt.compare(authData.password, person.password);
-        if (!isPassEquals) throw ApiError.WrongPasswordError();
+	async getPerson(id) {
+		const person = await db.findPersonById(id);
+		return person;
+	}
 
-        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(person), device);
-    }
-
-    async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken);
-        return token;
-    }
-
-    async refresh(refreshToken, device) {
-        if (!refreshToken) throw ApiError.UnauthorizedError();
-
-        const { id } = tokenService.validateRefreshToken(refreshToken);
-        const token = await tokenService.findToken(id, device);
-
-        if (!id || !token) throw ApiError.UnauthorizedError();
-
-        const person = await db.findPersonById(id);
-
-        return tokenService.createTokenAndSave(PersonDTO.toPlainObject(person), device);
-    }
-
-    async getAllPersons() {
-        const persons = await db.findPersonAll();
-        return persons;
-    }
+	async getAllPersons() {
+		const persons = await db.findPersonAll();
+		return persons;
+	}
 }
 
 module.exports = new PersonService();

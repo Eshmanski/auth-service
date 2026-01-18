@@ -8,50 +8,55 @@ const router = Router();
 
 // Authentication routes
 const authValidation = [
-    body('email').isEmail(),
-    body('password').isLength({ min: 6, max: 32 })
+	body('email').isEmail(),
+	body('password').isLength({ min: 6, max: 32 })
 ];
 
 router.get('/check', (req, res) => res.send('Auth service is working'));
 
 // Registration and login
 router.post(
-    '/registration',
-    [deviceInfoMiddleware, emailToLowerCase, ...authValidation],
-    personController.registration
+	'/registration',
+	[deviceInfoMiddleware, emailToLowerCase, ...authValidation],
+	personController.registration
 );
 
 router.post(
-    '/login',
-    [deviceInfoMiddleware, emailToLowerCase],
-    personController.login
+	'/login',
+	[deviceInfoMiddleware, emailToLowerCase, ...authValidation],
+	personController.login
 );
 
 // Session management
-router.post(
-    '/logout',
-    [deviceInfoMiddleware],
-    personController.logout
+router.get(
+	'/logout',
+	[deviceInfoMiddleware],
+	personController.logout
 );
 
 router.get(
-    '/refresh',
-    [deviceInfoMiddleware],
-    personController.refresh
+	'/refresh',
+	[deviceInfoMiddleware],
+	personController.refresh
 );
 
 // Account activation
 router.get(
-    '/activate/:link',
-    [deviceInfoMiddleware],
-    personController.activate
+	'/activate/:link',
+	personController.activate
 );
 
 // Protected routes
 router.get(
-    '/persons',
-    [deviceInfoMiddleware, authMiddlewares],
-    personController.getPersons
+	'/me',
+	[authMiddlewares],
+	personController.getMe
+);
+
+router.get(
+	'/persons',
+	[authMiddlewares],
+	personController.getPersons
 );
 
 module.exports = router;

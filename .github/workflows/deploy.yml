@@ -45,11 +45,12 @@ jobs:
           EOF
 
       - name: Update DB schema
-        run:  |
-          $env:PGPASSWORD = '${{ secrets.DB_PGS_PASSWORD }}'
-          psql -h ${{ secrets.DB_PGS_HOST }} `
-            -p ${{ secrets.DB_PGS_PORT }} `
-            -U ${{ secrets.DB_PGS_USER }} `
-            -d ${{ secrets.DB_PGS_NAME }} `
-            -f .\.db\update_schema.sql
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PGS_PASSWORD }}"
+          psql \
+            -h "${{ secrets.DB_PGS_HOST }}" \
+            -p "${{ secrets.DB_PGS_PORT }}" \
+            -U "${{ secrets.DB_PGS_USER }}" \
+            -d "${{ secrets.DB_PGS_NAME }}" \
+            -f "./.db/update_schema.sql"
 

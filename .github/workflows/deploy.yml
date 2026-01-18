@@ -11,14 +11,15 @@ jobs:
     environment: prod 
 
     steps:
-      - name: Check Runner setting
-        run: whoami; node -v; pnpm -v;
-
-      - name: Stop service
-        run: nssm stop AuthService
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.13
+          
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Check Runner setting
+        run: whoami; node -v; pnpm -v;
 
       - name: Install dependencies
         run: pnpm install
@@ -27,11 +28,15 @@ jobs:
         run: |
           $envContent = @"
             PORT=${{ secrets.PORT }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PGS_USER=${{ secrets.DB_PGS_USER }}
+            DB_PGS_PASSWORD=${{ secrets.DB_PGS_PASSWORD }}
+            DB_PGS_HOST=${{ secrets.DB_PGS_HOST }}
+            DB_PGS_PORT=${{ secrets.DB_PGS_PORT }}
+            DB_PGS_NAME=${{ secrets.DB_PGS_NAME }}
+            DB_REDIS_USER=${{ secrets.DB_REDIS_USER }}
+            DB_REDIS_PASSWORD=${{ secrets.DB_REDIS_PASSWORD }}
+            DB_REDIS_HOST=${{ secrets.DB_REDIS_HOST }}
+            DB_REDIS_PORT=${{ secrets.DB_REDIS_PORT }}
             JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
             JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
           "@
@@ -40,12 +45,10 @@ jobs:
 
       - name: Update DB schema
         run:  |
-          $env:PGPASSWORD = '${{ secrets.DB_PASSWORD }}'
-          psql -h ${{ secrets.DB_HOST }} `
-            -p ${{ secrets.DB_PORT }} `
-            -U ${{ secrets.DB_USER }} `
-            -d ${{ secrets.DB_NAME }} `
+          $env:PGPASSWORD = '${{ secrets.DB_PGS_PASSWORD }}'
+          psql -h ${{ secrets.DB_PGS_HOST }} `
+            -p ${{ secrets.DB_PGS_PORT }} `
+            -U ${{ secrets.DB_PGS_USER }} `
+            -d ${{ secrets.DB_PGS_NAME }} `
             -f .\.db\update_schema.sql
 
-      - name: Start service
-        run: nssm start AuthService

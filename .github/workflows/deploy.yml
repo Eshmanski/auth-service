@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24.13
-          
+
       - name: Enable pnpm
         run: corepack enable   
 
@@ -29,29 +29,28 @@ jobs:
 
       - name: Create .env file
         run: |
-          $envContent = @"
-            PORT=${{ secrets.PORT }}
-            DB_PGS_USER=${{ secrets.DB_PGS_USER }}
-            DB_PGS_PASSWORD=${{ secrets.DB_PGS_PASSWORD }}
-            DB_PGS_HOST=${{ secrets.DB_PGS_HOST }}
-            DB_PGS_PORT=${{ secrets.DB_PGS_PORT }}
-            DB_PGS_NAME=${{ secrets.DB_PGS_NAME }}
-            DB_REDIS_USER=${{ secrets.DB_REDIS_USER }}
-            DB_REDIS_PASSWORD=${{ secrets.DB_REDIS_PASSWORD }}
-            DB_REDIS_HOST=${{ secrets.DB_REDIS_HOST }}
-            DB_REDIS_PORT=${{ secrets.DB_REDIS_PORT }}
-            JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
-            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
-          "@
-
-          Set-Content -Path ".env" -Value $envContent -Encoding utf8
+          cat <<EOF > .env
+          PORT=${{ secrets.PORT }}
+          DB_PGS_USER=${{ secrets.DB_PGS_USER }}
+          DB_PGS_PASSWORD=${{ secrets.DB_PGS_PASSWORD }}
+          DB_PGS_HOST=${{ secrets.DB_PGS_HOST }}
+          DB_PGS_PORT=${{ secrets.DB_PGS_PORT }}
+          DB_PGS_NAME=${{ secrets.DB_PGS_NAME }}
+          DB_REDIS_USER=${{ secrets.DB_REDIS_USER }}
+          DB_REDIS_PASSWORD=${{ secrets.DB_REDIS_PASSWORD }}
+          DB_REDIS_HOST=${{ secrets.DB_REDIS_HOST }}
+          DB_REDIS_PORT=${{ secrets.DB_REDIS_PORT }}
+          JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          EOF
 
       - name: Update DB schema
-        run:  |
-          $env:PGPASSWORD = '${{ secrets.DB_PGS_PASSWORD }}'
-          psql -h ${{ secrets.DB_PGS_HOST }} `
-            -p ${{ secrets.DB_PGS_PORT }} `
-            -U ${{ secrets.DB_PGS_USER }} `
-            -d ${{ secrets.DB_PGS_NAME }} `
-            -f .\.db\update_schema.sql
+        run: |
+          export PGPASSWORD="${{ secrets.DB_PGS_PASSWORD }}"
+          psql \
+            -h "${{ secrets.DB_PGS_HOST }}" \
+            -p "${{ secrets.DB_PGS_PORT }}" \
+            -U "${{ secrets.DB_PGS_USER }}" \
+            -d "${{ secrets.DB_PGS_NAME }}" \
+            -f "./.db/update_schema.sql"
 

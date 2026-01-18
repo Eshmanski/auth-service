@@ -30,6 +30,7 @@ jobs:
       - name: Create .env file
         run: |
           cat <<EOF > .env
+          BASE_PATH=/auth-public/
           PORT=${{ secrets.PORT }}
           DB_PGS_USER=${{ secrets.DB_PGS_USER }}
           DB_PGS_PASSWORD=${{ secrets.DB_PGS_PASSWORD }}

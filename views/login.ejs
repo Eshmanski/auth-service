@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg" href="/images/flask.svg">
-  <link rel="stylesheet" href="/styles/fonts.css">
-  <link rel="stylesheet" href="/styles/common.css">
-  <link rel="stylesheet" href="/styles/bubble.css">
-  <script src="/scripts/bubble.js" defer></script>
+  <link rel="icon" type="image/svg" href="<%= basePath %>images/flask.svg">
+  <link rel="stylesheet" href="<%= basePath %>styles/fonts.css">
+  <link rel="stylesheet" href="<%= basePath %>styles/common.css">
+  <link rel="stylesheet" href="<%= basePath %>styles/bubble.css">
+  <script src="<%= basePath %>scripts/bubble.js" defer></script>
   <title>Auth space</title>
 </head>
 
@@ -18,7 +18,7 @@
       <div id="bubble-bg"></div>
 
       <div class="logo">
-        <img src="/images/flask.svg" alt="">
+        <img src="<%= basePath %>images/flask.svg" alt="">
         <div class="name">AUTH SERVICE</div>
         <div class="additional">
           <span>by</span> <span class="organization-name">EshmanskiLab</span>

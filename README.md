@@ -1,3 +1,19 @@
+# Table of Contents
+
+- [Environment](#environment)
+  - [Example env file](#example-env-file)
+- [End Points](#end-points)
+  - [GET `/api/check`](#get-apicheck)
+  - [POST `/api/registration`](#post-apiregistration)
+  - [POST `/api/login`](#post-apilogin)
+  - [GET `/api/logout`](#get-apilogout)
+  - [GET `/api/refresh`](#get-apirefresh)
+  - [GET `/api/activate/:link`](#get-apiactivatelink)
+  - [GET `/api/me`](#get-apime)
+  - [GET `/api/persons`](#get-apipersons)
+
+---
+
 # Environment
 
 | Variable | Description | Default | Required |
@@ -17,7 +33,7 @@
 | `JWT_REFRESH_SECRET` | The secret key for the JWT refresh token | - | Yes |
 | `CLIENT_URL` | The URL of the client application | - | Yes |
 
-## Example env file
+### Example env file
 ```
 BASE_PATH=
 PORT=

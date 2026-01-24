@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const sessionService = require('../service/session');
 const personService = require('../service/person');
 const tokenService = require('../service/token');
+const PersonDTO = require('../dtos/personDTO');
 const Session = require('../models/session');
 const ApiError = require('../errors/api');
 
@@ -115,8 +116,8 @@ class PersonController {
       const { id } = req.person;
       const person = await personService.getPerson(id);
 
-      return res.json(person);
-    } catch {
+      return res.json(new PersonDTO(person));
+    } catch (error) {
       next(error);
     }
   }

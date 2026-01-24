@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg" href="<%= basePath %>images/flask.svg">
+  <link rel="stylesheet" href="<%= basePath %>styles/fonts.css">
+  <link rel="stylesheet" href="<%= basePath %>styles/common.desktop.css">
+  <link rel="stylesheet" href="<%= basePath %>styles/bubble.css">
+  <script src="<%= basePath %>scripts/bubble.js" defer></script>
+  <title>Auth space</title>
+</head>
+
+<body>
+  <div class="app">
+    <div class="info bg">
+      <div id="bubble-bg"></div>
+
+      <div class="logo">
+        <img src="<%= basePath %>images/flask.svg" alt="">
+        <div class="name">AUTH SERVICE</div>
+        <div class="additional">
+          <span>by</span> <span class="organization-name">EshmanskiLab</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <h1>Login</h1>
+      <form action="/api/login" method="POST">
+        <table>
+          <tr>
+            <th><label for="username">Email:</label></th>
+            <th><input type="text" id="username" name="username" required></th>
+          </tr>
+
+          <tr>
+            <th><label for="password">Password:</label></th>
+            <th><input type="password" id="password" name="password" required></th>
+          </tr>
+
+          <tr>
+            <th></th>
+            <th><button class="login-bt" type="submit">Login</button></th>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

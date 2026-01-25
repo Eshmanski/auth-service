@@ -77,8 +77,8 @@ jobs:
       - name: Add user
         working-directory: ${{ env.APP_ROOT }}/releases/${{ env.RELEASE_ID }}
         run: |
-          node .db/_add_user.js --email="${{ secrets.EMAIL_USER_1 --password="${{ secrets.PASSWORD_USER_1 }}"
-          node .db/_add_user.js --email="${{ secrets.EMAIL_USER_2 }}" --password="${{ secrets.PASSWORD_USER_2 }}"
+          node .db/_add_user.js --email=${{ secrets.EMAIL_USER_1 }} --password=${{ secrets.PASSWORD_USER_1 }}
+          node .db/_add_user.js --email=${{ secrets.EMAIL_USER_2 }} --password=${{ secrets.PASSWORD_USER_2 }}
 
       - name: Switch current release
         run: |

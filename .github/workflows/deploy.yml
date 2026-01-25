@@ -31,6 +31,8 @@ jobs:
         run: |
           cat <<EOF > .env
           BASE_PATH=/auth-public/
+          API_PATH=/auth-api/
+          PAGE_PATH=/auth/
           PORT=${{ secrets.PORT }}
           DB_PGS_USER=${{ secrets.DB_PGS_USER }}
           DB_PGS_PASSWORD=${{ secrets.DB_PGS_PASSWORD }}
@@ -54,6 +56,14 @@ jobs:
             -U "${{ secrets.DB_PGS_USER }}" \
             -d "${{ secrets.DB_PGS_NAME }}" \
             -f "./.db/update_schema.sql"
+      - name: Add user
+        run: |
+          node .db/_add_user.js \
+            --email "${{ secrets.EMAIL_USER_1 }}" \
+            --password "${{ secrets.PASSWORD_USER_1 }}"
+          node .db/_add_user.js \
+            --email "${{ secrets.EMAIL_USER_2 }}" \
+            --password "${{ secrets.PASSWORD_USER_2 }}"
 
       - name: Start service
         run:  sudo systemctl restart auth-service | sudo systemctl start auth-service

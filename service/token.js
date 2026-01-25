@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 
 class TokenService {
+	generateAccessToken(person) {
+		const payload = PersonDTO.toPayloadAT(person);
+		const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '1h' });
+
+		return accessToken;
+	}
+	
 	generateTokensPack(person) {
 		const jti = uuid.v4();
 

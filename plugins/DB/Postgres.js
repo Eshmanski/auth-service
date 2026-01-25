@@ -11,7 +11,7 @@ class PGPool {
 			database: process.env.DB_PGS_NAME,
 			password: process.env.DB_PGS_PASSWORD,
 			port: process.env.DB_PGS_PORT
-		}
+		};
 
 		this.pool = new pg.Pool(config);
 	}

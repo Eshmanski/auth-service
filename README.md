@@ -19,6 +19,8 @@
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `BASE_PATH` | Base path for the application | `/` | No |
+| `API_PATH` | Api path for the application | `/api/` | No |
+| `PAGE_PATH` | Api path for the application | `/page/` | No |
 | `PORT` | The port to run the server on | `5000` | No |
 | `DB_PGS_USER` | The username for the postgres database | - | Yes |
 | `DB_PGS_PASSWORD` | The password for the postgres database | - | Yes |
@@ -36,6 +38,9 @@
 ### Example env file
 ```
 BASE_PATH=
+API_PATH=
+PAGE_PATH=
+
 PORT=
 
 DB_PGS_USER=

@@ -81,8 +81,8 @@ html, body {
 }
 
 .sidebar form {
-    width: 100%;
-    max-width: 100%;
+    width: calc(100% - 20px);
+    max-width: calc(100% - 20px);
 }
 
 .sidebar table {
@@ -166,11 +166,6 @@ html, body {
         font-size: 12px;
     }
 
-    .sidebar form {
-        width: 190px;
-
-    }
-    
     .login-bt {
         font-size: 12px;
         padding: 5px;
@@ -184,17 +179,6 @@ html, body {
 
     .logo > .additional {
         right: 8%;    
-    }
-
-    .sidebar {
-        width: 150px;
-        padding: 2px;
-        font-size: 10px;
-    }
-
-    .sidebar form {
-        width: 190px;
-
     }
     
     .login-bt {

@@ -6,7 +6,10 @@
   <title>Admin Page</title>
 </head>
 <body>
-  <h1>Welcome, <%= user.username %></h1>
+  <h1>Welcome, <%= person.email %></h1>
   <p>This is the admin panel.</p>
+  <a href="<%= pagePath %>logout">
+    <button type="button">Logout</button>
+  </a>
 </body>
 </html>

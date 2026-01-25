@@ -1,7 +1,7 @@
 const deviceInfoMiddleware = require('../middlewares/device');
 const personController = require('../controllers/person');
 const emailToLowerCase = require('../middlewares/email');
-const authMiddlewares = require('../middlewares/auth');
+const authMiddlewares = require('../middlewares/auth.api');
 const { body } = require('express-validator');
 const Router = require('express');
 const router = Router();

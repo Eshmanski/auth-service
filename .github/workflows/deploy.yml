@@ -1,10 +1,5 @@
 name: Deploy auth-service (self-hosted)
 
-env:
-  APP_NAME: auth
-  APP_ROOT: /opt/apps/services/auth
-  
-
 on:
   push:
     branches:
@@ -16,6 +11,8 @@ jobs:
     environment: prod 
 
     env:
+      APP_NAME: auth
+      APP_ROOT: /opt/apps/services/auth
       RELEASE_ID: ${{ github.run_id }}
 
     steps:
@@ -88,9 +85,6 @@ jobs:
           sudo ln -sfn \
             $APP_ROOT/releases/$RELEASE_ID \
             $APP_ROOT/current
-
-      # - name: Start service
-      #   run:  sudo systemctl restart auth-service | sudo systemctl start auth-service
 
       - name: Cleanup old releases
         run: |

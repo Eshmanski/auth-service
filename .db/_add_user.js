@@ -23,7 +23,7 @@ async function addUser(email, password) {
 		const hashedPassword = await bcrypt.hash(password, 3);
 
 		const person = new Person({
-			email: email,
+			email: email.toLowerCase(),
 			password: hashedPassword,
 			superuser: true,
 			is_activated: true,

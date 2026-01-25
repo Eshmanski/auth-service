@@ -59,11 +59,11 @@ jobs:
       - name: Add user
         run: |
           node .db/_add_user.js \
-            --email "${{ secrets.EMAIL_USER_1 }}" \
-            --password "${{ secrets.PASSWORD_USER_1 }}"
+            --email="${{ secrets.EMAIL_USER_1 }}" \
+            --password="${{ secrets.PASSWORD_USER_1 }}"
           node .db/_add_user.js \
-            --email "${{ secrets.EMAIL_USER_2 }}" \
-            --password "${{ secrets.PASSWORD_USER_2 }}"
+            --email="${{ secrets.EMAIL_USER_2 }}" \
+            --password="${{ secrets.PASSWORD_USER_2 }}"
 
       - name: Start service
         run:  sudo systemctl restart auth-service | sudo systemctl start auth-service

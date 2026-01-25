@@ -1,7 +1,6 @@
 const personService = require('../service/person');
 const tokenService = require('../service/token');
 const ApiError = require("../errors/api");
-const config = require('../config');
 
 const authMiddleware = async (req, res, next) => {
 	try {

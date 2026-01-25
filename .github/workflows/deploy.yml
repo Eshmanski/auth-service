@@ -86,7 +86,17 @@ jobs:
             $APP_ROOT/releases/$RELEASE_ID \
             $APP_ROOT/current
 
+      - name: Start service
+        run:  sudo systemctl restart auth-service | sudo systemctl start auth-service
+
       - name: Cleanup old releases
         run: |
           cd $APP_ROOT/releases
           ls -dt */ | tail -n +6 | xargs sudo rm -rf
+
+      - name: Cleanup runner workspace
+        if: always()
+        run: |
+          echo "Cleaning runner workspace..."
+          git reset --hard
+          git clean -fdx

@@ -1,5 +1,10 @@
 name: Deploy auth-service (self-hosted)
 
+env:
+  APP_NAME: auth
+  APP_ROOT: /opt/apps/services/auth
+  RELEASE_ID: ${{ github.run_id }}
+
 on:
   push:
     branches:
@@ -24,10 +29,21 @@ jobs:
       - name: Check Runner setting
         run: whoami; node -v; pnpm -v;
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Create release dir
+        run: |
+          sudo mkdir -p $APP_ROOT/releases/$RELEASE_ID
+          sudo chown -R $USER:$USER $APP_ROOT/releases
+
+      - name: Copy source to release
+        run: |
+          rsync -a --delete --exclude=node_modules ./ $APP_ROOT/releases/$RELEASE_ID/
+
+      - name: Install dependencies (release)
+        working-directory: ${{ env.APP_ROOT }}/releases/${{ env.RELEASE_ID }}
+        run: pnpm install --prod
 
       - name: Create .env file
+        working-directory: ${{ env.APP_ROOT }}/releases/${{ env.RELEASE_ID }}
         run: |
           cat <<EOF > .env
           BASE_PATH=/auth-public/
@@ -48,6 +64,7 @@ jobs:
           EOF
 
       - name: Update DB schema
+        working-directory: ${{ env.APP_ROOT }}/releases/${{ env.RELEASE_ID }}
         run: |
           export PGPASSWORD="${{ secrets.DB_PGS_PASSWORD }}"
           psql \
@@ -56,14 +73,23 @@ jobs:
             -U "${{ secrets.DB_PGS_USER }}" \
             -d "${{ secrets.DB_PGS_NAME }}" \
             -f "./.db/update_schema.sql"
-      - name: Add user
-        run: |
-          node .db/_add_user.js \
-            --email="${{ secrets.EMAIL_USER_1 }}" \
-            --password="${{ secrets.PASSWORD_USER_1 }}"
-          node .db/_add_user.js \
-            --email="${{ secrets.EMAIL_USER_2 }}" \
-            --password="${{ secrets.PASSWORD_USER_2 }}"
 
-      - name: Start service
-        run:  sudo systemctl restart auth-service | sudo systemctl start auth-service
+      - name: Add user
+        working-directory: ${{ env.APP_ROOT }}/releases/${{ env.RELEASE_ID }}
+        run: |
+          node .db/_add_user.js --email="${{ secrets.EMAIL_USER_1 --password="${{ secrets.PASSWORD_USER_1 }}"
+          node .db/_add_user.js --email="${{ secrets.EMAIL_USER_2 }}" --password="${{ secrets.PASSWORD_USER_2 }}"
+
+      - name: Switch current release
+        run: |
+          sudo ln -sfn \
+            $APP_ROOT/releases/$RELEASE_ID \
+            $APP_ROOT/current
+
+      # - name: Start service
+      #   run:  sudo systemctl restart auth-service | sudo systemctl start auth-service
+
+      - name: Cleanup old releases
+        run: |
+          cd $APP_ROOT/releases
+          ls -dt */ | tail -n +6 | xargs sudo rm -rf
